@@ -10,9 +10,9 @@
         @change="handleFilter"
       >
         <el-option
-          v-for="user in listuser"
-          :key="user"
-          :label="user.name | uppercaseFirst"
+          v-for="(user, b) in listuser"
+          :key="'H'+b"
+          :label="user.name"
           :value="user.id"
         />
       </el-select>
@@ -25,9 +25,9 @@
         @change="handleFilter"
       >
         <el-option
-          v-for="vol in listpackage"
-          :key="vol"
-          :label="vol.labelle | uppercaseFirst"
+          v-for="(vol, a) in listpackage"
+          :key="'V'+a"
+          :label="vol.labelle"
           :value="vol.id"
         />
       </el-select>
@@ -132,8 +132,8 @@
                   placeholder="اختر حساب الحريف"
                 >
                   <el-option
-                    v-for="user in listuser"
-                    :key="'s'+ user"
+                    v-for="(user, i) in listuser"
+                    :key="'s'+ i"
                     :label="user.name"
                     :value="user.id"
                   />
@@ -145,9 +145,9 @@
               <el-form-item label="اختر رحلة">
                 <el-select v-model="temp.package_id" placeholder="اختر رحلة">
                   <el-option
-                    v-for="vol in listpackage"
-                    :key="'A'+ vol"
-                    :label="vol.labelle | uppercaseFirst"
+                    v-for="(vol, j) in listpackage"
+                    :key="'A'+ j"
+                    :label="vol.labelle"
                     :value="vol.id"
                   />
                 </el-select>
@@ -161,9 +161,12 @@
                   v-model="temp.etat"
                   placeholder="نوع المبلغ المدفوع "
                 >
-                  <el-option :key="'k'+ 10" :label="المبلغ_كامل_دفع" :value="0" />
-                  <el-option :key="'k'+ 10" :label="تسبقه_دفع" :value="1" />
-                  <el-option :key="'k'+ 10" :label="مبلغ_تكملة" :value="2" />
+                  <el-option
+                    v-for="(blog, k) in blogs"
+                    :key="'M'+ k"
+                    :label="blog.title"
+                    :value="blog.value"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -171,14 +174,23 @@
             <el-col :span="11">
               <el-form-item label="طريقة الدفع">
                 <el-select v-model="temp.type" placeholder="طريقة الدفع">
-                  <el-option :key="'m'+ 25" :value="0">نقدا</el-option>
-                  <el-option :key="'m'+ 26" :value="1">شيك</el-option>
-                  <el-option :key="'m'+ 27" :value="2">ائتمان_بطاقة</el-option>
+                  <el-option
+                    v-for="(t, f) in types"
+                    :key="'T'+ f"
+                    :label="t.title"
+                    :value="t.value"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
+            <el-col :span="11">
+              <el-form-item label="montant">
+                <el-input v-model="temp.montant" type="number" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="2"> - </el-col>
             <el-col :span="11">
               <el-form-item label=" description">
                 <el-input
@@ -187,12 +199,6 @@
                   type="textarea"
                   placeholder="حدد وصف الرحلة"
                 />
-              </el-form-item>
-            </el-col>
-            <el-col :span="2"> - </el-col>
-            <el-col :span="11">
-              <el-form-item label="montant">
-                <el-input v-model="temp.montant" type="number" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -276,6 +282,16 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+      blogs: [
+        { title: 'المبلغ كامل دفع', value: 0 },
+        { title: 'تسبقه دفع', value: 1 },
+        { title: 'تكملة مبلغ', value: 2 },
+      ],
+      types: [
+        { title: 'نقدا', value: 0 },
+        { title: 'شيكا ', value: 1 },
+        { title: 'عبر بطاقة إئتمان', value: 2 },
+      ],
     };
   },
   computed: {},

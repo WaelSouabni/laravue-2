@@ -108,9 +108,9 @@
 
       <el-table-column :label="$t('الحالة')" align="center" width="'5%'">
         <template slot-scope="{ row }">
-          <span v-show="row.etat == '0'"> مرفوض </span>
-          <span v-show="row.etat == '1'"> غير مؤكد </span>
-          <span v-show="row.etat == '2'"> مؤكد </span>
+          <el-tag v-show="row.etat == '0'" type="danger"> مرفوض </el-tag>
+          <el-tag v-show="row.etat == '1'" type="warning"> غير مؤكد </el-tag>
+          <el-tag v-show="row.etat == '2'" type="success"> مؤكد </el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -134,19 +134,19 @@
             @click="handleDelete(row)"
           />
           <el-button
-            v-show="row.etat == '1'"
-            class="filter-item"
-            type="primary"
-            size="mini"
-            icon="el-icon-view"
-            @click="invalider(row)"
-          />
-          <el-button
-            v-show="row.etat == '1'"
+            v-show="row.etat == '1' || row.etat == '2'"
             class="filter-item"
             type="primary"
             size="mini"
             icon="el-icon-close"
+            @click="invalider(row)"
+          />
+          <el-button
+            v-show="row.etat == '1' || row.etat == '0'"
+            class="filter-item"
+            type="primary"
+            size="mini"
+            icon="el-icon-check"
             @click="valider(row)"
           />
         </template>

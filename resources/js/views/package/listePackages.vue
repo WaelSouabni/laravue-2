@@ -96,8 +96,8 @@
       </el-table-column>
       <el-table-column :label="$t('الحالة')" align="center" width="70px">
         <template slot-scope="{ row }">
-          <span v-if="row.etat == 1">منشورة</span>
-          <span v-else>غير منشورة</span>
+          <el-tag v-if="row.etat == 1" :type="success">منشورة</el-tag>
+          <el-tag v-else :type="danger">غير منشورة</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('الثمن')" class-name="status-col" width="70">
@@ -518,16 +518,29 @@ export default {
       });
     },
     handleDelete(row) {
-      deletePackage(row.id).then(() => {
-        this.$notify({
-          title: 'Success',
-          message: 'حذف بنجاح',
-          type: 'success',
-          duration: 2000,
+      this.$confirm('هل انت متؤكد من الحذف', 'Warning', {
+        confirmButtonText: 'نعم',
+        cancelButtonText: 'لا',
+        type: 'warning',
+      })
+        .then(() => {
+          deletePackage(row.id).then(() => {
+            this.$notify({
+              title: 'Success',
+              message: 'حذف بنجاح',
+              type: 'success',
+              duration: 2000,
+            });
+            const index = this.list.indexOf(row);
+            this.list.splice(index, 1);
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'تم إلغاء الحذف',
+          });
         });
-        const index = this.list.indexOf(row);
-        this.list.splice(index, 1);
-      });
     },
     handleFetchPv(pv) {
       fetchPv(pv).then((response) => {

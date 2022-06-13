@@ -31,7 +31,7 @@ class PelerinController extends Controller
     {
         //
         $searchParams = $request->all();
-        $userQuery = Pelerin::query()->orderBy('id', 'DESC');
+        $userQuery = Pelerin::query()->where('package_id', '<>', null)->orderBy('id', 'DESC');
         //$userQuery = Pelerin::orderBy('id', 'DESC')->get();
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $nomArabe = Arr::get($searchParams, 'nomArabe', '');

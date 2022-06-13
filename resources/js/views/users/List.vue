@@ -8,21 +8,6 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select
-        v-model="query.role"
-        :placeholder="$t('table.role')"
-        clearable
-        style="width: 90px"
-        class="filter-item"
-        @change="handleFilter"
-      >
-        <el-option
-          v-for="item in roles"
-          :key="item"
-          :label="item | uppercaseFirst"
-          :value="item"
-        />
-      </el-select>
       <el-button
         v-waves
         class="filter-item"
@@ -57,22 +42,22 @@
     >
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.index }}</span>
+          <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Name">
+      <el-table-column align="center" label="إسم المستخدم">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Email">
+      <el-table-column align="center" label="البريد الإلكتروني">
         <template slot-scope="scope">
           <span>{{ scope.row.email }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="center" label="أجراءات" width="350">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)" />
           <el-button
@@ -94,67 +79,6 @@
       @pagination="getList"
     />
 
-    <el-dialog
-      :visible.sync="dialogPermissionVisible"
-      :title="'Edit Permissions - ' + currentUser.name"
-    >
-      <div
-        v-if="currentUser.name"
-        v-loading="dialogPermissionLoading"
-        class="form-container"
-      >
-        <div class="permissions-container">
-          <div class="block">
-            <el-form
-              :model="currentUser"
-              label-width="80px"
-              label-position="top"
-            >
-              <el-form-item label="Menus">
-                <el-tree
-                  ref="menuPermissions"
-                  :data="normalizedMenuPermissions"
-                  :default-checked-keys="permissionKeys(userMenuPermissions)"
-                  :props="permissionProps"
-                  show-checkbox
-                  node-key="id"
-                  class="permission-tree"
-                />
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="block">
-            <el-form
-              :model="currentUser"
-              label-width="80px"
-              label-position="top"
-            >
-              <el-form-item label="Permissions">
-                <el-tree
-                  ref="otherPermissions"
-                  :data="normalizedOtherPermissions"
-                  :default-checked-keys="permissionKeys(userOtherPermissions)"
-                  :props="permissionProps"
-                  show-checkbox
-                  node-key="id"
-                  class="permission-tree"
-                />
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="clear-left" />
-        </div>
-        <div style="text-align: right">
-          <el-button type="danger" @click="dialogPermissionVisible = false">
-            {{ $t('permission.cancel') }}
-          </el-button>
-          <el-button type="primary" @click="confirmPermission">
-            {{ $t('permission.confirm') }}
-          </el-button>
-        </div>
-      </div>
-    </el-dialog>
-
     <el-dialog :title="'زيادة مستعمل جديد'" :visible.sync="dialogFormVisible">
       <div v-loading="userCreating" class="form-container">
         <el-form
@@ -165,47 +89,32 @@
           label-width="150px"
           style="max-width: 1000px"
         >
-          <el-form-item :label="$t('user.role')" prop="role">
-            <el-select
-              v-model="newUser.role"
-              class="filter-item"
-              placeholder="Please select role"
-            >
-              <el-option
-                v-for="item in nonAdminRoles"
-                :key="item"
-                :label="item | uppercaseFirst"
-                :value="item"
-              />
-            </el-select>
-          </el-form-item>
-
           <el-row>
-            <el-col :span="11">
-              <el-form-item :label="$t('user.name')" prop="name">
-                <el-input v-model="newUser.name" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="2"> - </el-col>
             <el-col :span="11">
               <el-form-item :label="$t('user.email')" prop="email">
                 <el-input v-model="newUser.email" />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
+            <el-col :span="2"> - </el-col>
             <el-col :span="11">
-              <el-form-item :label="$t('user.password')" prop="password">
-                <el-input v-model="newUser.password" show-password />
+              <el-form-item :label="$t('user.name')" prop="name">
+                <el-input v-model="newUser.name" />
               </el-form-item>
             </el-col>
-            <el-col :span="2"> - </el-col>
+          </el-row>
+          <el-row>
             <el-col :span="11">
               <el-form-item
                 :label="$t('user.confirmPassword')"
                 prop="confirmPassword"
               >
                 <el-input v-model="newUser.confirmPassword" show-password />
+              </el-form-item>
+            </el-col>
+            <el-col :span="2"> - </el-col>
+            <el-col :span="11">
+              <el-form-item :label="$t('user.password')" prop="password">
+                <el-input v-model="newUser.password" show-password />
               </el-form-item>
             </el-col>
           </el-row>
@@ -226,22 +135,19 @@
 <script>
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import UserResource from '@/api/user';
-import Resource from '@/api/resource';
 import waves from '@/directive/waves'; // Waves directive
 import permission from '@/directive/permission'; // Permission directive
-import checkPermission from '@/utils/permission'; // Permission checking
 
 const userResource = new UserResource();
-const permissionResource = new Resource('permissions');
 
 export default {
   name: 'UserList',
   components: { Pagination },
   directives: { waves, permission },
   data() {
-    var validateConfirmPassword = (rule, value, callback) => {
+    var validateConfirmPassword = (value, callback) => {
       if (value !== this.newUser.password) {
-        callback(new Error('Password is mismatched!'));
+        callback(new Error('كلمة المرور غير متطابقة!'));
       } else {
         callback();
       }
@@ -256,7 +162,6 @@ export default {
         page: 1,
         limit: 15,
         keyword: '',
-        role: '',
       },
       roles: ['أدمين', 'مستخدم عادي'],
       nonAdminRoles: ['أدمين', 'مستخدم عادي'],
@@ -271,22 +176,19 @@ export default {
         rolePermissions: [],
       },
       rules: {
-        role: [
-          { required: true, message: 'Role is required', trigger: 'change' },
-        ],
         name: [
-          { required: true, message: 'Name is required', trigger: 'blur' },
+          { required: true, message: 'الاسم إجباري', trigger: 'blur' },
         ],
         email: [
-          { required: true, message: 'Email is required', trigger: 'blur' },
+          { required: true, message: 'البريد الإلكتروني إجباري', trigger: 'blur' },
           {
             type: 'email',
-            message: 'Please input correct email address',
+            message: 'الرجاء إدخال عنوان البريد الإلكتروني الصحيح',
             trigger: ['blur', 'change'],
           },
         ],
         password: [
-          { required: true, message: 'Password is required', trigger: 'blur' },
+          { required: true, message: 'كلمة المرور  إجبارية', trigger: 'blur' },
         ],
         confirmPassword: [
           { validator: validateConfirmPassword, trigger: 'blur' },
@@ -302,94 +204,12 @@ export default {
       otherPermissions: [],
     };
   },
-  computed: {
-    normalizedMenuPermissions() {
-      let tmp = [];
-      this.currentUser.permissions.role.forEach((permission) => {
-        tmp.push({
-          id: permission.id,
-          name: permission.name,
-          disabled: true,
-        });
-      });
-      const rolePermissions = {
-        id: -1, // Just a faked ID
-        name: 'Inherited from role',
-        disabled: true,
-        children: this.classifyPermissions(tmp).menu,
-      };
-
-      tmp = this.menuPermissions.filter(
-        (permission) =>
-          !this.currentUser.permissions.role.find((p) => p.id === permission.id)
-      );
-      const userPermissions = {
-        id: 0, // Faked ID
-        name: 'Extra menus',
-        children: tmp,
-        disabled: tmp.length === 0,
-      };
-
-      return [rolePermissions, userPermissions];
-    },
-    normalizedOtherPermissions() {
-      let tmp = [];
-      this.currentUser.permissions.role.forEach((permission) => {
-        tmp.push({
-          id: permission.id,
-          name: permission.name,
-          disabled: true,
-        });
-      });
-      const rolePermissions = {
-        id: -1,
-        name: 'Inherited from role',
-        disabled: true,
-        children: this.classifyPermissions(tmp).other,
-      };
-
-      tmp = this.otherPermissions.filter(
-        (permission) =>
-          !this.currentUser.permissions.role.find((p) => p.id === permission.id)
-      );
-      const userPermissions = {
-        id: 0,
-        name: 'Extra permissions',
-        children: tmp,
-        disabled: tmp.length === 0,
-      };
-
-      return [rolePermissions, userPermissions];
-    },
-    userMenuPermissions() {
-      return this.classifyPermissions(this.userPermissions).menu;
-    },
-    userOtherPermissions() {
-      return this.classifyPermissions(this.userPermissions).other;
-    },
-    userPermissions() {
-      return this.currentUser.permissions.role.concat(
-        this.currentUser.permissions.user
-      );
-    },
-  },
+  computed: {},
   created() {
     this.resetNewUser();
     this.getList();
-    if (checkPermission(['manage permission'])) {
-      this.getPermissions();
-    }
   },
   methods: {
-    checkPermission,
-    async getPermissions() {
-      const { data } = await permissionResource.list({});
-      const { all, menu, other } = this.classifyPermissions(data);
-      this.permissions = all;
-      this.menuPermissions = menu;
-      this.otherPermissions = other;
-    },
-
     async getList() {
       const { limit, page } = this.query;
       this.loading = true;
@@ -408,17 +228,18 @@ export default {
     handleCreate() {
       this.resetNewUser();
       this.dialogFormVisible = true;
+      this.dialogStatus = 'create';
       this.$nextTick(() => {
         this.$refs['userForm'].clearValidate();
       });
     },
     handleDelete(id, name) {
       this.$confirm(
-        'This will permanently delete user ' + name + '. Continue?',
+        'هل انت متؤكد من الحذف',
         'Warning',
         {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: 'نعم',
+          cancelButtonText: 'لا',
           type: 'warning',
         }
       )
@@ -428,7 +249,7 @@ export default {
             .then((response) => {
               this.$message({
                 type: 'success',
-                message: 'Delete completed',
+                message: 'اكتمل الحذف',
               });
               this.handleFilter();
             })
@@ -439,25 +260,20 @@ export default {
         .catch(() => {
           this.$message({
             type: 'info',
-            message: 'Delete canceled',
+            message: 'تم إلغاء الحذف',
           });
         });
     },
     createUser() {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
-          this.newUser.roles = [this.newUser.role];
           this.userCreating = true;
           userResource
             .store(this.newUser)
             .then((response) => {
               this.$message({
                 message:
-                  'New user ' +
-                  this.newUser.name +
-                  '(' +
-                  this.newUser.email +
-                  ') has been created successfully.',
+                 'تمت الاضافة بنجاح',
                 type: 'success',
                 duration: 5 * 1000,
               });
@@ -531,7 +347,7 @@ export default {
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'user-list',
+          filename: 'قائمة المستخدم',
         });
         this.downloading = false;
       });

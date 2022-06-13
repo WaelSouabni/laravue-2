@@ -141,6 +141,12 @@ Route::group(['prefix' => 'Mobile'], function () {
     Route::post('/AccompagnateurStore', 'Api\AccompagnateurController@registerAccompgnateur');
     Route::post('/PelerinStore', 'Api\PelerinController@registerPelerin');
     Route::post('/PelerinUpdat', 'Api\PelerinController@modfierPelerin');
+
+    //
+    Route::get('/listPelerinsPackage/{package_id}', 'Api\MobileUserController@pelerinsPackage');
+    Route::get('/listPelerinsAccompm/{id}', 'Api\MobileUserController@pelerinsAccompgnateurs');
+    Route::get('/listPelerinsAccompm/{id}/{package_id}', 'Api\MobileUserController@pelerinsAccompgnateursVol');
+
 });
   
 

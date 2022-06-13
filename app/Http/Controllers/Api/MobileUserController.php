@@ -196,4 +196,45 @@ class MobileUserController extends Controller
           'packages' => $packages
       ]);
     }
+
+    
+           /**
+     * volaccom api.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function pelerinsPackage($package_id)
+    {
+     // $now = new DateTime();
+      $pelerins = DB::select('select pelerins.id,pelerins.nomArabe, pelerins.prenomArabe,pelerins.etat,pelerins.telephoneTunisien FROM pelerins where pelerins.package_id =?',[$package_id]);
+        return response()->json([
+          'pelerins' => $pelerins
+      ]);
+    }
+           /**
+     * pelerins-accompganteur api.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function pelerinsAccompgnateurs($id)
+    {
+     // $now = new DateTime();
+      $pelerins = DB::select('select  pelerins.id,pelerins.nomArabe, pelerins.prenomArabe,pelerins.etat,pelerins.telephoneTunisien FROM pelerins where pelerins.createur_id =?',[id]);
+        return response()->json([
+          'pelerins' => $pelerins
+      ]);
+    }
+            /**
+     * pelerins-accompganteur-vols api.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function pelerinsAccompgnateursVol($id,$package_id)
+    {
+     // $now = new DateTime();
+      $pelerins = DB::select('select pelerins.id,pelerins.nomArabe, pelerins.prenomArabe,pelerins.etat,pelerins.telephoneTunisien FROM pelerins where pelerins.createur_id =? and pelerins.package_id =?',[$id,$package_id]);
+        return response()->json([
+          'pelerins' => $pelerins
+      ]);
+    }
 }

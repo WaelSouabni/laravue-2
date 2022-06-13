@@ -240,7 +240,22 @@ export default {
         permissions: [],
         rolePermissions: [],
       },
-      rules: {},
+      rules: {
+        user_id: [
+          {
+            required: true,
+            message: 'يجب انشاء حساب حريف قبل ادخاله هنا',
+            trigger: 'change',
+          },
+        ],
+        package_id: [
+          {
+            required: true,
+            message: ' وجب اختيار رحلة للحريف',
+            trigger: 'change',
+          },
+        ],
+      },
       permissionProps: {
         children: 'children',
         label: 'name',
@@ -249,6 +264,7 @@ export default {
       permissions: [],
       menuPermissions: [],
       otherPermissions: [],
+
     };
   },
   computed: {},

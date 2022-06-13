@@ -43,13 +43,7 @@ class UserController extends BaseController
         $searchParams = $request->all();
         $userQuery = User::query()->orderBy('id', 'DESC');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
-        $role = Arr::get($searchParams, 'role', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
-
-        if (!empty($role)) {
-            $userQuery->whereHas('roles', function($q) use ($role) { $q->where('name', $role); });
-        }
-
         if (!empty($keyword)) {
             $userQuery->where('name', 'LIKE', '%' . $keyword . '%');
             $userQuery->where('email', 'LIKE', '%' . $keyword . '%');
@@ -114,10 +108,10 @@ class UserController extends BaseController
     public function update(Request $request, User $user)
     {
         if ($user === null) {
-            return response()->json(['error' => 'User not found'], 404);
+            return response()->json(['error' => 'المستخدم ليس موجود'], 404);
         }
         if ($user->isAdmin()) {
-            return response()->json(['error' => 'Admin can not be modified'], 403);
+            return response()->json(['error' => 'لا يمكن تعديل المسؤول'], 403);
         }
 
         $currentUser = Auth::user();
@@ -125,7 +119,7 @@ class UserController extends BaseController
             && $currentUser->id !== $user->id
             && !$currentUser->hasPermission(\App\Laravue\Acl::PERMISSION_USER_MANAGE)
         ) {
-            return response()->json(['error' => 'Permission denied'], 403);
+            return response()->json(['error' => 'تم رفض الإذن'], 403);
         }
 
         $validator = Validator::make($request->all(), $this->getValidationRules(false));
@@ -225,10 +219,6 @@ class UserController extends BaseController
         return [
             'name' => 'required',
             'email' => $isNew ? 'required|email|unique:users' : 'required|email',
-            'roles' => [
-                'required',
-                'array'
-            ],
         ];
     }
 
