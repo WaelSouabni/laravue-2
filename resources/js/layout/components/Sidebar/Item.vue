@@ -33,5 +33,6 @@ export default {
 <style lang="scss" scoped>
   .el-submenu [class^="el-icon-"] {
     text-align: right;
+   // margin-right: 12px;
   }
 </style>

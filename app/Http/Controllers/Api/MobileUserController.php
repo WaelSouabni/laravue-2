@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use Illuminate\Support\Facades\Hash;
 class MobileUserController extends Controller
 {
     /**
@@ -219,7 +220,7 @@ class MobileUserController extends Controller
     public function pelerinsAccompgnateurs($id)
     {
      // $now = new DateTime();
-      $pelerins = DB::select('select  pelerins.id,pelerins.nomArabe, pelerins.prenomArabe,pelerins.etat,pelerins.telephoneTunisien FROM pelerins where pelerins.createur_id =?',[id]);
+      $pelerins = DB::select('select  pelerins.id,pelerins.nomArabe, pelerins.prenomArabe,pelerins.etat,pelerins.telephoneTunisien FROM pelerins where pelerins.createur_id =?',[$id]);
         return response()->json([
           'pelerins' => $pelerins
       ]);
@@ -237,4 +238,34 @@ class MobileUserController extends Controller
           'pelerins' => $pelerins
       ]);
     }
+
+                /**
+     * messages-pelerins api.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function messageHistorique($id)
+    {
+     // $now = new DateTime();
+      $messages = DB::select('select messages.id,messages.description,messages.reponseDescription FROM messages where messages.user_id =?',[$id]);
+        return response()->json([
+          'messages' => $messages
+      ]);
+    }
+    //
+             /**
+     * messages-pelerins api.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request)
+    {
+     // $now = new DateTime();
+     $id=$request->input('user_id');
+     $user = User::where('id',  $id)->first();
+     $user->password=Hash::make($request->input('password'));
+   
+      return response()->json(['success' => 'تم التحديث'], 200);
+    }
+
 }

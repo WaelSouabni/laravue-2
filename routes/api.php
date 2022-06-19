@@ -145,8 +145,9 @@ Route::group(['prefix' => 'Mobile'], function () {
     //
     Route::get('/listPelerinsPackage/{package_id}', 'Api\MobileUserController@pelerinsPackage');
     Route::get('/listPelerinsAccompm/{id}', 'Api\MobileUserController@pelerinsAccompgnateurs');
+    Route::get('/listMessage/{id}', 'Api\MobileUserController@messageHistorique');
     Route::get('/listPelerinsAccompm/{id}/{package_id}', 'Api\MobileUserController@pelerinsAccompgnateursVol');
-
+    Route::post('/updatePassword', 'Api\MobileUserController@updatePassword');
 });
   
 

@@ -68,11 +68,12 @@ class AccompagnateurPackageController extends Controller
             'package_id' => $params['package_id'],
         ]);
         
-       /* $package = Package::findOrFail($params['package_id']);
+       $package = Package::findOrFail($params['package_id']);
+       $package['NombreAccRestant']=$package['NombreAccRestant']-1;
+       $package->save();
         //return($params['role']);
-        if($package['role']== 0){
-         $package['NombreAccRestant']=$package['NombreAccRestant']-1;
-         $package->save();
+       /* if($package['role']== 0){
+      
            return($package); 
         }
         else{
